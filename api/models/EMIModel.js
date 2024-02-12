@@ -24,6 +24,10 @@ const EMISchema = new mongoose.Schema({
     totalPenalty: {
         type: Number,
         required: true
+    },
+    emiAmount: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

@@ -65,11 +65,11 @@ const userSchema = new mongoose.Schema({
     },
     startEMI: {
         type: String,
-        required: true,
+        // required: true,
     },
     endEMI: {
         type: String,
-        required: true
+        // required: true
 
     }
 }, { timestamps: true });
