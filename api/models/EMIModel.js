@@ -1,28 +1,20 @@
 const mongoose = require("mongoose");
 
 const EMISchema = new mongoose.Schema({
-    // userId: {
-    //     type: String,
-    //     required: true
-    // },
-    EMIAmount: {
-        type: Number,
+    userId: {
+        type: String,
         required: true
     },
     currentDate: {
         type: String,
         required: true
     },
-    isPaid: {
-        type: Boolean,
-        default: false
-    },
-    penaltyAmount: {
-        type: Number,
-        required: true
-    },
-    totalPenalty: {
-        type: Number,
+    // isPaid: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    penalty: {
+        type: String,
         required: true
     },
     emiAmount: {

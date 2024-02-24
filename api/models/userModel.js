@@ -70,8 +70,50 @@ const userSchema = new mongoose.Schema({
     endEMI: {
         type: String,
         // required: true
+    },
+    totalPenalty: {
+        type: Number,
+        default: 0
+    },
+    penaltyAmount: {
+        type: Number,
+        default: 0
+    },
+    emiAmount: {
+        type: Number,
+        required: true
 
-    }
+    },
+    advanceAmount: {
+        type: Number,
+        default: 0
+
+    },
+    totalEMIAmount: {
+        type: Number,
+        default: 0
+
+    },
+    totalEMICount: {
+        type: Number,
+        default: 0
+
+    },
+    lastEMIDate: {
+        type: Date,
+        // default: Date.now
+    },
+    EMIBounceCount: {
+        type: Number,
+        default: 0
+
+    },
+    lastEMIAmount: {
+        type: Number,
+        default: 0
+
+    },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("user", userSchema);

@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const dotenv =  require("dotenv");
+const dotenv = require("dotenv");
 const connectDb = require("./config/db");
 const userRoute = require("./routes/userRoute");
 const EMIRoute = require("./routes/EMIRoute");
+const cronJob = require("./cronJob")
 
 const app = express();
 
@@ -22,13 +23,13 @@ app.use("/api/user", userRoute);
 app.use("/api/emi", EMIRoute);
 
 
-app.get("/", (req,res) => {
+app.get("/", (req, res) => {
     res.send("Hello from server");
 })
 
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, ()=> {
+app.listen(port, () => {
     console.log(`SERVER IS RUNNING ON http://localhost:${port}`);
 });

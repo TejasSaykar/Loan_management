@@ -4,6 +4,7 @@ import {
   Button,
   CardContent,
   Grid,
+  InputLabel,
   Paper,
   Table,
   TableBody,
@@ -15,51 +16,44 @@ import {
   Typography,
 } from "@mui/material";
 import SideNav from "../components/SideNav";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Card, message } from "antd";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  console.log("User : -----------", users)
 
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
 
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/user/all-users`
-        );
-        if (data) {
-          setUsers(data.users);
-          // console.log(data.users);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-        setLoading(false);
+  const fetchUser = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/user/all-users`
+      );
+      if (data) {
+        setUsers(data.users);
+        // console.log(data.users);
       }
-    };
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchUser();
   }, []);
 
-  // const handleInputChange = (rowId, propertyName, value) => {
-  //     setUpdatedData((prevData) => {
-  //         const newData = [...prevData];
-  //         newData[rowId] = { ...newData[rowId], [propertyName]: value };
-  //         return newData;
-  //     });
-  // };
-
   const handleInputChange = (event, index) => {
-    const { name, value } = event.target;
+    const { value, name } = event.target;
     const updatedRowData = [...users];
-    updatedRowData[index][name] = value;
+    updatedRowData[index][name] = parseInt(value);
     setUsers(updatedRowData);
   };
 
@@ -71,11 +65,7 @@ const Users = () => {
       .put(`${import.meta.env.VITE_BASE_URL}/api/emi/calculate-emi`, users)
       .then((response) => {
         console.log("Data updated successfully:", response.data);
-        const clearedUserData = rowData.map((row) => ({
-          ...row,
-          emi: "",
-        }));
-        setUsers(clearedUserData);
+        fetchUser();
       })
       .catch((error) => {
         console.error("Error updating data:", error);
@@ -132,29 +122,14 @@ const Users = () => {
             </Grid>
             <form onSubmit={handleSubmit}>
               <Box display={"flex"} justifyContent={"space-between"} px={2}>
-                <Box
-                //   sx={{
-                //     border: "1px solid gray",
-                //     width: "max-content",
-                //     p: 2,
-                //     cursor: "pointer",
-                //   }}
-                //   id="datePicker"
-                //   onClick={() => console.log("clicked")}
-                >
-                  <label htmlFor="datePicker">Select Date: </label>
-                  <input
+                <Box display={"flex"} alignItems={"center"}>
+                  <InputLabel htmlFor="datePicker">Select Date: </InputLabel>
+                  <TextField
                     type="date"
                     id="datePicker"
                     value={selectedDate}
                     onChange={handleDateChange}
                     capture="environment"
-                    style={{
-                      border: "1px solid gray",
-                      borderRadius: "5px",
-                      padding: "4px 4px",
-                      cursor: "pointer",
-                    }}
                   />
                 </Box>
                 {selectedDate && (
@@ -191,10 +166,22 @@ const Users = () => {
                       Laon Amount
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="right">
-                      Total EMI Paid
+                      Pay EMI Amount
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }} align="left">
+                      EMIAmount
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="right">
+                      Total Penalty
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }} align="right">
+                      Advance
+                    </TableCell>
+                    {/* <TableCell sx={{ fontWeight: "bold" }} align="right">
                       Action
+                    </TableCell> */}
+                    <TableCell sx={{ fontWeight: "bold" }} align="right">
+                      Type
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -218,23 +205,39 @@ const Users = () => {
                       <TableCell component="th" scope="row">
                         {index + 1}
                       </TableCell>
-                      <TableCell align="right">{user.fullname}</TableCell>
-                      <TableCell align="right">{user.loanAmount}</TableCell>
-                      <TableCell align="right">
+                      <TableCell align="left">{user.fullname}</TableCell>
+                      <TableCell align="left">{user.loanAmount}</TableCell>
+                      <TableCell align="left">
                         {user.EMIType === "day" ? 50 : 100}
                       </TableCell>
-                      <TableCell align="right">
-                        {/* <Checkbox
-                          onChange={() => handleCheckboxClick(user._id)}
-                        /> */}
+                      <TableCell
+                        align="left"
+                        // sx={{ display: "flex", alignItems: "center" }}
+                      >
+                        {/* {user.emiAmount} */}
                         <TextField
-                          type="text"
-                          name="emiAmount"
+                          type="number"
+                          name="enteredEmiAmount"
                           ref={inputRef}
-                          value={user.EMIAmout}
+                          value={user.emiAmount}
+                          sx={{ width: "50%" }}
                           onChange={(e) => handleInputChange(e, index)}
                         />
                       </TableCell>
+                      <TableCell align="left">{user.totalPenalty}</TableCell>
+                      <TableCell align="left">{user.advanceAmount}</TableCell>
+                      {/* <TableCell>
+                        <Link
+                          to={`/edit-user/${user._id}`}
+                          style={{
+                            textDecoration: "underline",
+                            marginLeft: "5px",
+                          }}
+                        >
+                          View user
+                        </Link>
+                      </TableCell> */}
+                      <TableCell align="left">{user.EMIType}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

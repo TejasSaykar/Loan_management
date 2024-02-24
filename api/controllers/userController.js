@@ -1,12 +1,11 @@
 const userModel = require("../models/userModel");
 
-
 // Register User
 exports.userRegistration = async (req, res) => {
-    const { fullname, address, loanAmount, EMIType, guaranteePerson1, guaranteePerson2, guaranteePerson1Address, guaranteePerson2Address, nomineeName, nomineeAddress, refferalName, startEMI, endEMI, isPaid,guaranteePerson1Phone, guaranteePerson2Phone, nomineePhone } = req.body;
+    const { fullname, address, loanAmount, EMIType, penaltyAmount, guaranteePerson1, guaranteePerson2, guaranteePerson1Address, guaranteePerson2Address, nomineeName, nomineeAddress, refferalName, startEMI, endEMI, isPaid, guaranteePerson1Phone, guaranteePerson2Phone, nomineePhone, emiAmount, totalPenalty, advance } = req.body;
     try {
-        const user = await userModel({
-            fullname, address, loanAmount, EMIType, guaranteePerson1, guaranteePerson2, guaranteePerson1Address, guaranteePerson2Address, nomineeName, nomineeAddress, refferalName, startEMI, endEMI, isPaid, guaranteePerson1Phone, guaranteePerson2Phone, nomineePhone
+        const user = await new userModel({
+            fullname, address, loanAmount, EMIType, guaranteePerson1, guaranteePerson2, guaranteePerson1Address, guaranteePerson2Address, nomineeName, nomineeAddress, refferalName, startEMI, endEMI, isPaid, guaranteePerson1Phone, penaltyAmount, guaranteePerson2Phone, nomineePhone, emiAmount, totalPenalty, advance
         }).save();
 
         return res.status(200).json({
