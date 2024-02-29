@@ -21,7 +21,7 @@ const UserRegistration = () => {
     fullname: "",
     address: "",
     loanAmount: "",
-    EMIType: "",
+    instalmentType: "",
     emiAmount: "",
     penaltyAmount: "",
     advanceAmount: "",
@@ -87,7 +87,7 @@ const UserRegistration = () => {
           fullname: inputs.fullname,
           address: inputs.address,
           loanAmount: inputs.loanAmount,
-          EMIType: inputs.EMIType,
+          EMIType: inputs.instalmentType,
           emiAmount: inputs.emiAmount,
           penaltyAmount: inputs.penaltyAmount,
           advanceAmount: inputs.advanceAmount,
@@ -110,7 +110,7 @@ const UserRegistration = () => {
           fullname: "",
           address: "",
           loanAmount: "",
-          EMIType: "",
+          instalmentType: "",
           guaranteePerson1: "",
           guaranteePerson2: "",
           guaranteePerson1Address: "",
@@ -204,16 +204,16 @@ const UserRegistration = () => {
                   </Grid>
                   <Grid item sm={12} lg={6}>
                     <InputLabel id="demo-simple-select-label" sx={{ ml: 0.2 }}>
-                      EMIType
+                      Instalment Type
                     </InputLabel>
                     <Select
                       variant="standard"
                       required
-                      value={inputs.EMIType}
+                      value={inputs.instalmentType}
                       label="Age"
                       sx={{ width: 100 + "%" }}
                       onChange={(e) =>
-                        setInputs({ ...inputs, EMIType: e.target.value })
+                        setInputs({ ...inputs, instalmentType: e.target.value })
                       }
                     >
                       <MenuItem value={"day"}>Day</MenuItem>
@@ -239,7 +239,7 @@ const UserRegistration = () => {
                           emiAmount: e.target.value,
                         })
                       }
-                      label="Emi Amount"
+                      label="Instalment Amount"
                       variant="outlined"
                       sx={{ width: 100 + "%" }}
                     />

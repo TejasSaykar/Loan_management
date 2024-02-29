@@ -3,33 +3,32 @@ const userModel = require("../models/userModel");
 const Transaction = require("../models/Transaction");
 const moment = require("moment");
 
-const cron = require('node-cron');
-
 exports.EMI = async (req, res) => {
     const arrayData = req.body;
     let emi;
     let result;
 
-    const periodInDays = 365;
-    const periodInWeeks = 52;
-    const currentDate = new Date();
+    // const periodInDays = 365;
+    // const periodInWeeks = 52;
+    // const currentDate = new Date();
+    // const emiResults = [];
 
-    const emiResults = [];
     let AlluserData = [];
 
     try {
         for (const user of arrayData)
         // const user = arrayData[0]
         {
-            let userData = await userModel.findById({ _id: user._id });// Get from db
+            let userData = await userModel.findById({ _id: user._id }); // Get from db
 
             console.log('-------user---------', userData)
             if (userData) {
-
                 const { enteredEmiAmount } = user;// Entered amt
 
-                console.log('userData.lastEMIDate ===moment().toDate()', userData.lastEMIDate + '===' + moment().toDate())
-                if (userData.lastEMIDate != undefined && (userData.lastEMIDate === moment().toDate())) {
+                console.log("enteredEmiAmount : ", enteredEmiAmount)
+
+                console.log('userData.lastEMIDate === moment().toDate()', userData.createdAt + '===' + moment().toDate())
+                if ((userData.createdAt === moment().toDate())) {
                     console.log("---------Update")
                     // Update
                     // accept EMI
@@ -39,7 +38,7 @@ exports.EMI = async (req, res) => {
 
                     // reset previous enrty
                     if (userData.lastEMIAmount > userData.penaltyAmount) {
-                        userData.totalPenalty -= userData.penaltyAmount;// reset prevoius emi amt
+                        userData.totalPenalty -= userData.penaltyAmount; // reset prevoius emi amt
                         userData.EMIBounceCount -= 1;// reset previous amt
 
                     } else {
@@ -56,6 +55,7 @@ exports.EMI = async (req, res) => {
                         userData.totalPenalty += userData.penaltyAmount;
                         userData.EMIBounceCount += 1;
                         userData.lastEMIAmount = 0;
+                        userData.lastEMIDate = moment().toDate();
 
                     } else {
                         if (enteredEmiAmount == userData.emiAmount) {
@@ -64,6 +64,8 @@ exports.EMI = async (req, res) => {
                             userData.totalEMICount += 1;
                             userData.lastEMIDate = moment().toDate();// no need
                             userData.lastEMIAmount = enteredEmiAmount;
+                            userData.totalPenalty = 0;
+                            userData.EMIBounceCount -= 1;
                         } else {
                             if (enteredEmiAmount > userData.emiAmount) {
                                 userData.totalEMIAmount += userData.emiAmount;
@@ -72,6 +74,7 @@ exports.EMI = async (req, res) => {
                                 userData.lastEMIAmount = userData.emiAmount;
 
                                 userData.advanceAmount += enteredEmiAmount - userData.emiAmount;
+
                                 //add in advance
                             } else {
                                 // if entered data is minimum than emiAmount
@@ -94,14 +97,19 @@ exports.EMI = async (req, res) => {
                             }
                         }
                     }
-                    totalEMIAmount = parseInt(EMI) - (parseInt(userData.lastEMIAmount) + (parseInt(enteredEmiAmount)));
+
+                    result = await userModel.findByIdAndUpdate({ _id: user._id }, { $set: userData }, { new: true });
 
                 }
                 else {
                     // Insert
                     if (enteredEmiAmount === 0) {
                         if ((userData.advanceAmount + enteredEmiAmount) >= userData.emiAmount) {
-                            ///pending
+                            userData.lastEMIAmount += userData.emiAmount;
+                            userData.totalEMIAmount += userData.emiAmount;
+                            userData.advanceAmount = (userData.advanceAmount - userData.emiAmount);
+                            userData.totalEMICount += 1;
+                            userData.lastEMIDate = moment().toDate();
                         }
                         else {
                             userData.totalPenalty += userData.penaltyAmount;
@@ -109,8 +117,6 @@ exports.EMI = async (req, res) => {
                             userData.lastEMIDate = moment().toDate();
                         }
                     } else {
-
-
                         if (enteredEmiAmount == userData.emiAmount) {
                             userData.totalEMIAmount = userData.totalEMIAmount + userData.emiAmount;
                             userData.totalEMICount += 1;
@@ -124,6 +130,8 @@ exports.EMI = async (req, res) => {
                                 userData.lastEMIDate = moment().toDate();
 
                                 userData.advanceAmount += enteredEmiAmount - userData.emiAmount;
+
+                                userData.lastEMIAmount = enteredEmiAmount;
                                 //add in advance
                             } else {
                                 // if entered data is minimum than emiAmount
@@ -141,6 +149,7 @@ exports.EMI = async (req, res) => {
                                     userData.lastEMIDate = moment().toDate();
 
                                     userData.advanceAmount += enteredEmiAmount;
+
                                     //add in advance
                                 }
                             }
@@ -148,33 +157,20 @@ exports.EMI = async (req, res) => {
                     }
 
                 }
-                console.log('----', userData)
+                // console.log('----', userData)
 
                 AlluserData.push(userData)
             }
             else {
-                // return user not found
-                // res.status(404).json({
-                //     success: true,
-                //     message: "User Not Found",
-                //     userData,
-                //     emi
-                // });
-                // console.log('user not found ', userData)
+                return res.status(404).json({
+                    success: true,
+                    message: "User Not Found",
+                    userData,
+                    emi
+                });
             }
-            // TODO const PendingEMINumber = previousEMI ? previousEMI.penalty : 0;
             AlluserData.push(userData);
             result = await userModel.findByIdAndUpdate({ _id: user._id }, { $set: userData }, { new: true });
-
-            // console.log("Previous Penalty : ", previousPenalty);
-
-            // const newAmount = parseInt(previousPenalty) + (parseInt(emiAmount) || 0);
-
-            // result = await userModel.findByIdAndUpdate({ _id: userId }, { $set: { totalPenalty: Number(newAmount) } }, { new: true });
-
-            // emi = await EMIModel.findOneAndUpdate({ userId }, { $set: { userId, emiAmount, currentDate, penalty: newAmount } }, { upsert: true });
-            // Paid penalty
-
 
         }
         res.status(200).json({

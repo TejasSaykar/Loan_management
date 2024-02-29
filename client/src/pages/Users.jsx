@@ -23,10 +23,9 @@ import { Card, message } from "antd";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  console.log("User : -----------", users)
 
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const inputRef = useRef(null);
 
@@ -52,9 +51,12 @@ const Users = () => {
 
   const handleInputChange = (event, index) => {
     const { value, name } = event.target;
-    const updatedRowData = [...users];
-    updatedRowData[index][name] = parseInt(value);
-    setUsers(updatedRowData);
+    const updatedUsers = [...users]; // Assuming users is your state variable containing the array of user objects
+    updatedUsers[index] = {
+      ...updatedUsers[index],
+      [name]: parseInt(value),
+    };
+    setUsers(updatedUsers);
   };
 
   const handleSubmit = (e) => {
@@ -166,10 +168,10 @@ const Users = () => {
                       Laon Amount
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="right">
-                      Pay EMI Amount
+                      Pay Instalment Amount
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="left">
-                      EMIAmount
+                      Instalment Amount
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="right">
                       Total Penalty
@@ -219,9 +221,12 @@ const Users = () => {
                           type="number"
                           name="enteredEmiAmount"
                           ref={inputRef}
-                          value={user.emiAmount}
+                          // value={user.emiAmount}
                           sx={{ width: "50%" }}
-                          onChange={(e) => handleInputChange(e, index)}
+                          onChange={(e) => {
+                            console.log("Value changing to : ", e.target.value),
+                              handleInputChange(e, index);
+                          }}
                         />
                       </TableCell>
                       <TableCell align="left">{user.totalPenalty}</TableCell>
@@ -237,7 +242,7 @@ const Users = () => {
                           View user
                         </Link>
                       </TableCell> */}
-                      <TableCell align="left">{user.EMIType}</TableCell>
+                      <TableCell align="left">{user.instalmentType}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

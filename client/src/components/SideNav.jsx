@@ -187,7 +187,7 @@ export default function SideNav() {
                             >
                                 <GroupAddIcon />
                             </ListItemIcon>
-                            <ListItemText primary={ "User EMI" } sx={ { opacity: open ? 1 : 0 } } />
+                            <ListItemText primary={ "User Instalment" } sx={ { opacity: open ? 1 : 0 } } />
                         </ListItemButton>
                     </ListItem>
                 </List>
