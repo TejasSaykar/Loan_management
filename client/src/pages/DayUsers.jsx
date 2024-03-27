@@ -21,6 +21,8 @@ import axios from "axios";
 const DayUsers = () => {
   const [dayUsers, setDayUsers] = useState([]);
 
+  console.log("Day Wise Users : ", dayUsers);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,7 +30,7 @@ const DayUsers = () => {
           `${import.meta.env.VITE_BASE_URL}/api/user/day-user/day`
         );
         if (data) {
-          console.log("Day Data : ", data.dayUser);
+          // console.log("Day Data : ", data.dayUser);
           setDayUsers(data.dayUser);
         }
       } catch (error) {
@@ -37,6 +39,31 @@ const DayUsers = () => {
     };
     fetchData();
   }, []);
+
+  const handleInputChange = (event, index) => {
+    const { value, name } = event.target;
+    const updatedUsers = [...dayUsers]; // Assuming users is your state variable containing the array of user objects
+    updatedUsers[index] = {
+      ...updatedUsers[index],
+      [name]: parseInt(value),
+    };
+    setDayUsers(updatedUsers);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Users data : ", users);
+    message.success("Emi updated");
+    axios
+      .put(`${import.meta.env.VITE_BASE_URL}/api/emi/calculate-emi`, users)
+      .then((response) => {
+        console.log("Data updated successfully:", response.data);
+        fetchUser();
+      })
+      .catch((error) => {
+        console.error("Error updating data:", error);
+      });
+  };
 
   return (
     <>
@@ -56,7 +83,7 @@ const DayUsers = () => {
                 Users
               </Typography>
             </Grid>
-            <form>
+            <form onSubmit={handleSubmit}>
               <Table
                 sx={{ width: 100 + "%", overflowX: "scroll" }}
                 aria-label="customized table"
@@ -70,9 +97,9 @@ const DayUsers = () => {
                     <TableCell sx={{ fontWeight: "bold" }} align="left">
                       Laon Amount
                     </TableCell>
-                    {/* <TableCell sx={{ fontWeight: "bold" }} align="left">
+                    <TableCell sx={{ fontWeight: "bold" }} align="left">
                       Pay Instalment Amount
-                    </TableCell> */}
+                    </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="left">
                       Instalment Amount
                     </TableCell>
@@ -115,9 +142,7 @@ const DayUsers = () => {
                       <TableCell align="left">
                         {user.EMIType === "day" ? 50 : 100}
                       </TableCell>
-                      {/* <TableCell
-                        align="left"
-                      >
+                      <TableCell align="left">
                         <TextField
                           type="number"
                           name="enteredEmiAmount"
@@ -128,7 +153,7 @@ const DayUsers = () => {
                               handleInputChange(e, index);
                           }}
                         />
-                      </TableCell> */}
+                      </TableCell>
                       <TableCell align="left">{user.totalPenalty}</TableCell>
                       <TableCell align="left">{user.advanceAmount}</TableCell>
                       {/* <TableCell>
@@ -149,13 +174,13 @@ const DayUsers = () => {
                   ))}
                 </TableBody>
               </Table>
-              {/* {dayUsers.length !== 0 && (
+              {dayUsers.length !== 0 && (
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button type="submit" variant="contained" sx={{ m: 2 }}>
                     Submit
                   </Button>
                 </Box>
-              )} */}
+              )}
             </form>
           </TableContainer>
         </Box>
